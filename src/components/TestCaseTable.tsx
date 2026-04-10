@@ -45,7 +45,8 @@ export function TestCaseTable({ visibleCases, visibleResults }: TestCaseTablePro
         </TableHead>
         <TableBody>
           {visibleCases.map((testCase, idx) => {
-            const result = visibleResults.find((item) => item.index === idx && item.isVisible);
+            const caseId = testCase.id ?? idx;
+            const result = visibleResults.find((item) => item.testCaseId === caseId && item.isVisible);
 
             return (
               <TableRow key={`visible-${idx}`}>

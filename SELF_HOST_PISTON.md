@@ -1,10 +1,8 @@
 # Self-host Piston for compile99
 
-Public `emkc.org` access is restricted. This project supports a custom endpoint via:
+compile99 backend executes code through Piston.
 
-`VITE_PISTON_ENDPOINT`
-
-## 1) Start a local Piston host
+## 1) Start local Piston
 
 From `/Users/shiva/training-flow/compile99/piston-host`:
 
@@ -12,29 +10,18 @@ From `/Users/shiva/training-flow/compile99/piston-host`:
 docker compose up -d
 ```
 
-This starts Piston at:
+Piston endpoints:
 
 - `http://localhost:2000/api/v2/execute`
 - `http://localhost:2000/api/v2/runtimes`
 
-## 2) Point the React app to your host
-
-Create `/Users/shiva/training-flow/compile99/.env`:
-
-```env
-VITE_PISTON_ENDPOINT=/api/v2/execute
-```
-
-This project proxies `/api/v2/*` through Vite to `http://localhost:2000`, so browser requests stay same-origin and avoid CORS issues.
-Restart Vite after changing `.env`.
-
-## 3) Verify runtime availability
+## 2) Verify runtimes
 
 ```bash
 curl http://localhost:2000/api/v2/runtimes
 ```
 
-If this returns `[]`, install JavaScript runtime:
+If you get `[]`, install Node runtime package:
 
 ```bash
 curl -X POST http://localhost:2000/api/v2/packages \
@@ -42,14 +29,18 @@ curl -X POST http://localhost:2000/api/v2/packages \
   -d '{"language":"node","version":"18.15.0"}'
 ```
 
-If JavaScript runtime/version differs from the app default (`18.15.0`), update
-`VERSION` in `src/App.tsx` to match one available runtime.
+## 3) Backend configuration
 
-## 4) Security note
+In `/Users/shiva/training-flow/compile99/server/.env`:
 
-Piston runs with Docker `privileged: true` by design. For production use,
-deploy in an isolated VM/network boundary and expose only through your own API
-or reverse proxy with auth/rate limits.
+```env
+PORT=4000
+PISTON_ENDPOINT=http://localhost:2000/api/v2/execute
+```
+
+## 4) Security
+
+Piston runs with `privileged: true`. Use isolated environments (VM/network boundary) for production.
 
 ## 5) Stop host
 

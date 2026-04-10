@@ -1,73 +1,74 @@
-# React + TypeScript + Vite
+# compile99
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Full-stack coding assessment platform using:
 
-Currently, two official plugins are available:
+- Frontend: React + TypeScript + MUI (Vite)
+- Backend: Node.js + Express
+- Database: SQLite (`server/data/compile99.db`)
+- Code execution: Piston API (self-hosted recommended)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Architecture
 
-## React Compiler
+- Browser talks only to backend API (`/api/...`)
+- Backend stores questions, test cases, submissions in SQLite
+- Backend executes code against Piston
+- Hidden test cases are never sent to the browser
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Features
 
-## Expanding the ESLint configuration
+- Assessment page:
+  - Markdown problem statement
+  - Code editor
+  - Run visible test cases
+  - Submit full solution (visible + hidden tests)
+- Question management page:
+  - Create questions
+  - Add visible and hidden test cases
+- Persistence:
+  - Questions and test cases saved in SQLite
+  - Submission results saved in SQLite
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## Setup
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+1. Start Piston (local Docker):
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+cd piston-host
+docker compose up -d
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+2. Frontend env:
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+cp .env.example .env
 ```
+
+3. Backend env:
+
+```bash
+cp server/.env.example server/.env
+```
+
+4. Install dependencies and run app:
+
+```bash
+npm install
+npm run dev
+```
+
+- Frontend: `http://localhost:5173`
+- Backend: `http://localhost:4000`
+
+## API Summary
+
+- `GET /api/questions` - list questions
+- `GET /api/questions/:id` - question + visible test cases
+- `POST /api/questions` - create question (visible + hidden test cases)
+- `POST /api/questions/:id/run-visible` - run only visible cases
+- `POST /api/questions/:id/submit` - run all cases, save submission
+- `GET /api/submissions?questionId=...` - list saved submissions
+
+## Notes
+
+- Backend defaults to `PISTON_ENDPOINT=http://localhost:2000/api/v2/execute`
+- Initial sample question is auto-seeded into SQLite on first run.

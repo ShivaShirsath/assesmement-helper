@@ -17,7 +17,6 @@ type CodeEditorPanelProps = {
   code: string;
   onCodeChange: (value: string) => void;
   language: string;
-  onLanguageChange: (value: string) => void;
   onRunVisible: () => void;
   onSubmit: () => void;
   isRunningVisible: boolean;
@@ -28,7 +27,6 @@ export function CodeEditorPanel({
   code,
   onCodeChange,
   language,
-  onLanguageChange,
   onRunVisible,
   onSubmit,
   isRunningVisible,
@@ -60,12 +58,7 @@ export function CodeEditorPanel({
         </Typography>
         <FormControl size="small" sx={{ minWidth: 160 }}>
           <InputLabel id="language-label">Language</InputLabel>
-          <Select
-            labelId="language-label"
-            value={language}
-            label="Language"
-            onChange={(event) => onLanguageChange(event.target.value)}
-          >
+          <Select labelId="language-label" value={language} label="Language" disabled>
             <MenuItem value="javascript">JavaScript</MenuItem>
           </Select>
         </FormControl>
